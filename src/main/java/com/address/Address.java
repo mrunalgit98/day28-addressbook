@@ -1,9 +1,11 @@
 package com.address;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Address{
@@ -68,6 +70,19 @@ public class Address{
         csvWriter.flush();
         csvWriter.close();
     }
+    public void json()throws FileNotFoundException{
+        List<List<String>>inpu =new ArrayList<List<String>>();
+        Scanner user=new Scanner(new File("addressBook.csv"));
+        while (user.hasNextLine()){
+            Scanner sc=new Scanner(user.nextLine()).useDelimiter("\t");
+            List<String>line=new ArrayList<String>();
+            while (sc.hasNext()){
+                line.add(sc.next());
+            }
+            inpu.add(line);
+        }
+        System.out.println(inpu);
+    }
 
     public static void main(String[] args) {
         Address a1=new Address();
@@ -78,6 +93,11 @@ public class Address{
             m.IO_File();
         } catch (IOException e) {
 
+            e.printStackTrace();
+        }
+        try {
+            m.json();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         a1.AddContactsDetails();
