@@ -1,17 +1,23 @@
 package com.address;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+
+import com.google.gson.Gson;
+import net.projectmonkey.object.mapper.ObjectMapper;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 
 public class Address{
     private static ArrayList<Contact> list = new ArrayList<Contact>();
 
-    // Add contact details in AddressBookContact ::
+
     public void AddContactsDetails() {
         Scanner userInput = new Scanner(System.in);
         System.out.println("Enter the First Name => ");
@@ -36,94 +42,39 @@ public class Address{
         list.add(details);
         details.display();
     }
-    private void IO_File() throws IOException {
-        FileWriter csvWriter = new FileWriter("addressBook.csv");
-        csvWriter.append("firstName");
-        csvWriter.append(",");
-        csvWriter.append("lastName");
-        csvWriter.append(",");
-        csvWriter.append("address");
-        csvWriter.append(",");
-        csvWriter.append("city");
-        csvWriter.append(",");
-        csvWriter.append("state");
-        csvWriter.append(",");
-        csvWriter.append("Zip Code");
-        csvWriter.append(",");
-        csvWriter.append("Phone no");
-        csvWriter.append(",");
-        csvWriter.append("email-ID");
-        csvWriter.append("\n");
-        for (Contact rowData : list) {
-            csvWriter.append(String.join(",",
-                    rowData.getFirstName()
-                            + "," + rowData.getLastName()
-                            + "," + rowData.getAddress()
-                            + "," + rowData.getCity()
-                            + "," + rowData.getState()
-                            + "," + rowData.getZip()
-                            + "," + rowData.getPhoneNumber()
-                            + "," + rowData.getEmail()));
-            csvWriter.append("\n");
-        }
 
-        csvWriter.flush();
-        csvWriter.close();
-    }
-    public void json()throws FileNotFoundException{
-        List<List<String>>inpu =new ArrayList<List<String>>();
-        Scanner user=new Scanner(new File("addressBook.csv"));
-        while (user.hasNextLine()){
-            Scanner sc=new Scanner(user.nextLine()).useDelimiter("\t");
-            List<String>line=new ArrayList<String>();
-            while (sc.hasNext()){
-                line.add(sc.next());
-            }
-            inpu.add(line);
-        }
-        System.out.println(inpu);
+    public void write() throws IOException {
+        Path file= Paths.get("h1.json");
+        Gson gson=new Gson();
+        String json=gson.toJson(list);
+        FileWriter writer=new FileWriter(String.valueOf(file));
+        writer.write(json);
+        writer.close();
     }
 
-    public static void main(String[] args) {
-        Address a1=new Address();
-        a1.AddContactsDetails();
-
-        Address m=new Address();
-        try {
-            m.IO_File();
+    public void read(){
+        ArrayList<Contact>con=null;
+        Path filepath=Paths.get("h1.json");
+        try (Reader reader = Files.newBufferedReader(filepath);){
+            Gson gson=new Gson();
+            con=new ArrayList<Contact>(Arrays.asList(gson.fromJson(reader,Contact[].class)));
+      for (Contact c1:list){
+          System.out.println("Firstname " +c1.getFirstName());
+      }
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-            e.printStackTrace();
-        }
-        try {
-            m.json();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        a1.AddContactsDetails();
+    public static void main(String[] args) throws IOException {
+    Address n=new Address();
+n.AddContactsDetails();
+        n.write();
+n.read();
 
 
-        File file = new File("C:\\MY STORAGE FILESSSSSSSSSSSSSSSSS\\eclippsesee\\Day28AddressBookSystem"); //initialize File object and passing path as argument
-        boolean result;
-        try
-        {
-            result = file.createNewFile();  //creates a new file
-            if(result)      // test if successfully created a new file
-            {
-                System.out.println("file created "+file.getCanonicalPath()); //returns the path string
-            }
-            else
-            {
-                System.out.println("File already exist at location: "+file.getCanonicalPath());
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();    //prints exception if any
-        }
     }
 
 
 
-    }
-
+}
